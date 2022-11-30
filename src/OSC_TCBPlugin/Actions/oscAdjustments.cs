@@ -32,8 +32,7 @@
 
             //var message = new SharpOSC.OscMessage(actionParameter, "hello world");
             //var sender = new SharpOSC.UDPSender("127.0.0.1", 55555);
-            parse_osc_arguments(actionParameter);
-            var message = new SharpOSC.OscMessage(parse_osc_address(actionParameter), 1);
+            var message = new SharpOSC.OscMessage(parse_osc_address(actionParameter), parse_osc_argument(actionParameter));
             var sender = new SharpOSC.UDPSender(parse_ip_address(actionParameter), parse_port_number(actionParameter));
             sender.Send(message);
 
@@ -85,6 +84,20 @@
             }
 
             return address;
+        }
+
+        public String parse_osc_argument(String actionParameter)
+        {
+            String arguments = "";
+
+            if (actionParameter.Contains(this.delim_port_number))
+            {
+                int start_index = actionParameter.IndexOf(this.delim_address) + 1;
+                arguments = actionParameter.Substring(start_index);
+                System.Diagnostics.Debug.WriteLine("ARGUMENT = " + arguments.ToString());
+            }
+
+            return arguments;
         }
 
         public void parse_osc_arguments(String actionParameter)

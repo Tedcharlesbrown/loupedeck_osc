@@ -6,10 +6,10 @@
 type: plugin4
 
 # Name of the plugin.
-name: OSC_TCB
+name: Loupdeck OSC
 
 # Name that is displayed in the Loupedeck configuration application.
-displayName: OSC_TCB
+displayName: Loupdeck OSC
 
 # Name of the plugin library file.
 pluginFileName: OSC_TCBPlugin.dll
@@ -18,11 +18,12 @@ pluginFileName: OSC_TCBPlugin.dll
 version: 0.1
 
 # Author of the plugin. The author can be a company or an individual developer.
-author: Rkdns
+author: Ted Charles Brown
+
+supportPageUrl: https://github.com/Tedcharlesbrown/loupedeck_osc
 
 # Copyright information.
-copyright: Copyright © 2022 Rkdns. All rights reserved.
-
+copyright: Copyright © 2022 Ted Charles Brown. All rights reserved.
 
 # ==================================================================================================
 # PLUGIN PROPERTIES
