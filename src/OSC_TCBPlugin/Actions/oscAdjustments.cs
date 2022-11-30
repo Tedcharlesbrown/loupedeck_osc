@@ -11,6 +11,10 @@
     public class oscAdjustments : PluginDynamicCommand
     {
 
+        String delim_ip_address = ":";
+        String delim_port_number = "|";
+        String delim_address = " ";
+
         public oscAdjustments()
             : base()
         {
@@ -24,67 +28,106 @@
 
         protected override void RunCommand(String actionParameter)
         {
-            System.Diagnostics.Debug.WriteLine(parse_actionParameter(actionParameter)[0]);
+            //System.Diagnostics.Debug.WriteLine(parse_actionParameter(actionParameter)[0]);
 
-            // var message = new SharpOSC.OscMessage(actionParameter, "hello world");
-            // var sender = new SharpOSC.UDPSender("127.0.0.1", 55555);
-            var message = new SharpOSC.OscMessage(parse_actionParameter(actionParameter)[2], parse_actionParameter(actionParameter)[3]);
-            var sender = new SharpOSC.UDPSender(parse_actionParameter(actionParameter)[0], Int16(parse_actionParameter(actionParameter)[1]));
+            //var message = new SharpOSC.OscMessage(actionParameter, "hello world");
+            //var sender = new SharpOSC.UDPSender("127.0.0.1", 55555);
+            parse_osc_arguments(actionParameter);
+            var message = new SharpOSC.OscMessage(parse_osc_address(actionParameter), 1);
+            var sender = new SharpOSC.UDPSender(parse_ip_address(actionParameter), parse_port_number(actionParameter));
             sender.Send(message);
 
         }
 
-        public String[] parse_actionParameter(String actionParameter)
+
+        public String parse_ip_address(String actionParameter)
         {
-            String ip_address = "";
-            String port_number = "";
-            String address = "";
-            String argument = "";
+            String ip_address = "127.0.0.1";
 
-            String delim_ip_address = ":";
-            String delim_port_number = "|";
-            String delim_address = " ";
-
-            // PARSE IP ADDRESS
-            Console.WriteLine(actionParameter);
-            if (actionParameter.Contains(delim_ip_address))
+            if (actionParameter.Contains(this.delim_ip_address))
             {
-                int start_index = actionParameter.IndexOf(delim_ip_address);
+                int start_index = actionParameter.IndexOf(this.delim_ip_address);
                 ip_address = actionParameter.Substring(0, start_index);
-                System.Diagnostics.Debug.WriteLine("IP ADDRESS = " + ip_address.ToString());
+                //System.Diagnostics.Debug.WriteLine("IP ADDRESS = " + ip_address.ToString());
             }
-            // PARSE PORT NUMBER
-            if (actionParameter.Contains(delim_port_number))
-            {
-                int start_index = actionParameter.IndexOf(delim_ip_address) + 1;
-                int end_index = actionParameter.IndexOf(delim_port_number) - start_index;
 
-                port_number = actionParameter.Substring(start_index, end_index);
-                System.Diagnostics.Debug.WriteLine("PORT NUMBER = " + port_number.ToString());
-            }
-            // PARSE ADDRESS
-            if (actionParameter.Contains(delim_port_number))
+            return ip_address;
+        }
+
+        public Int32 parse_port_number(String actionParameter)
+        {
+            Int32 port_number = 55555;
+
+            if (actionParameter.Contains(this.delim_port_number))
             {
-                int start_index = actionParameter.IndexOf(delim_port_number) + 1;
-                int end_index = actionParameter.IndexOf(delim_address) - start_index;
+                int start_index = actionParameter.IndexOf(this.delim_ip_address) + 1;
+                int end_index = actionParameter.IndexOf(this.delim_port_number) - start_index;
+
+                port_number = Int32.Parse(actionParameter.Substring(start_index, end_index));
+                //System.Diagnostics.Debug.WriteLine("PORT NUMBER = " + port_number.ToString());
+            }
+
+            return port_number;
+        }
+
+        public String parse_osc_address(String actionParameter)
+        {
+
+            String address = "";
+
+            if (actionParameter.Contains(this.delim_port_number))
+            {
+                int start_index = actionParameter.IndexOf(this.delim_port_number) + 1;
+                int end_index = actionParameter.IndexOf(this.delim_address) - start_index;
                 address = actionParameter.Substring(start_index, end_index);
-                System.Diagnostics.Debug.WriteLine("ADDRESS = " + address.ToString());
+                //System.Diagnostics.Debug.WriteLine("ADDRESS = " + address.ToString());
 
             }
 
-            // PARSE ARGUMENTS
-            if (actionParameter.Contains(delim_port_number))
+            return address;
+        }
+
+        public void parse_osc_arguments(String actionParameter)
+        {
+            
+            String arguments = "";
+
+            if (actionParameter.Contains(this.delim_port_number))
             {
-                int start_index = actionParameter.IndexOf(delim_address) + 1;
-                argument = actionParameter.Substring(start_index);
-                System.Diagnostics.Debug.WriteLine("ARGUMENT = " + argument.ToString());
-
+                int start_index = actionParameter.IndexOf(this.delim_address) + 1;
+                arguments = actionParameter.Substring(start_index);
+                System.Diagnostics.Debug.WriteLine("ARGUMENT = " + arguments.ToString());
             }
 
-            String[] actionParameters = {ip_address,port_number,address,argument};
+            bool found_type = false;
 
-            return actionParameters;
+            try
+            {
+                Int32.Parse(arguments).GetType();
+                found_type = true;
+                System.Diagnostics.Debug.WriteLine("ARGUMENT IS INT");
+            }
+            catch (FormatException)
+            {
+                System.Diagnostics.Debug.WriteLine("ARGUMENT IS NOT INT");
+            }
+
+            try
+            {
+                float.Parse(arguments).GetType();
+                found_type = true;
+                System.Diagnostics.Debug.WriteLine("ARGUMENT IS FLOAT");
+            }
+            catch (FormatException)
+            {
+                System.Diagnostics.Debug.WriteLine("ARGUMENT IS NOT FLOAT");
+            }
+
+            if (arguments is String && found_type == false)
+            {
+                System.Diagnostics.Debug.WriteLine("ARGUMENT IS STRING");
+            }
+
         }
     }
-
 }
